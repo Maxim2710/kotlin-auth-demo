@@ -4,6 +4,7 @@ import com.kotlinauthdemo.dto.authorization.UserAuthResponseDto
 import com.kotlinauthdemo.dto.authorization.UserLoginDto
 import com.kotlinauthdemo.dto.registration.UserRegistrationDto
 import com.kotlinauthdemo.dto.registration.UserResponseDto
+import com.kotlinauthdemo.dto.updatepassword.UserPasswordUpdateDto
 import com.kotlinauthdemo.model.User
 import com.kotlinauthdemo.repository.UserRepository
 import com.kotlinauthdemo.util.JwtUtils
@@ -50,7 +51,10 @@ class UserService(
             throw IllegalArgumentException("Invalid credentials")
         }
 
-        val token = jwtUtils.generateToken(user.email)
+        val token = jwtUtils.generateToken(
+            user.email,
+            user.id
+        )
 
         return UserAuthResponseDto(
             id = user.id,
@@ -79,5 +83,24 @@ class UserService(
             username = user.username,
             email = user.email
         )
+    }
+
+    fun updatePassword(passwordUpdate: UserPasswordUpdateDto, token: String) {
+        val userId = jwtUtils.extractUserIdFromJwt(token) ?: throw IllegalArgumentException("Invalid token")
+
+        val user = userRepository.findById(userId)
+            .orElseThrow{ throw IllegalArgumentException("User not found with id: $userId")}
+
+        if (!passwordEncoder.matches(passwordUpdate.oldPassword, user.password)) {
+            throw IllegalArgumentException("Old password is incorrect")
+        }
+
+        if (passwordEncoder.matches(passwordUpdate.newPassword, user.password)) {
+            throw IllegalArgumentException("New password must be different from the old one")
+        }
+
+        user.password = passwordEncoder.encode(passwordUpdate.newPassword)
+
+        userRepository.save(user)
     }
 }

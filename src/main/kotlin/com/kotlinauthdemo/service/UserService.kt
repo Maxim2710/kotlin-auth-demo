@@ -89,7 +89,7 @@ class UserService(
         val userId = jwtUtils.extractUserIdFromJwt(token) ?: throw IllegalArgumentException("Invalid token")
 
         val user = userRepository.findById(userId)
-            .orElseThrow{ throw IllegalArgumentException("User not found with id: $userId")}
+            .orElseThrow { throw IllegalArgumentException("User not found with id: $userId")}
 
         if (!passwordEncoder.matches(passwordUpdate.oldPassword, user.password)) {
             throw IllegalArgumentException("Old password is incorrect")
@@ -103,4 +103,15 @@ class UserService(
 
         userRepository.save(user)
     }
+
+    fun deleteUser(token: String) {
+        val userId = jwtUtils.extractUserIdFromJwt(token) ?: throw IllegalArgumentException("Invalid token")
+
+        val user = userRepository.findById(userId)
+            .orElseThrow { throw IllegalArgumentException("User not found with id: $userId") }
+
+        userRepository.delete(user)
+    }
+
+
 }

@@ -2,6 +2,7 @@ package com.kotlinauthdemo.controller
 
 import com.kotlinauthdemo.dto.authorization.UserAuthResponseDto
 import com.kotlinauthdemo.dto.authorization.UserLoginDto
+import com.kotlinauthdemo.dto.deleteuser.DeleteUserResponseMsg
 import com.kotlinauthdemo.dto.registration.UserRegistrationDto
 import com.kotlinauthdemo.dto.registration.UserResponseDto
 import com.kotlinauthdemo.dto.updatepassword.UpdatePasswordResponseMsg
@@ -9,6 +10,7 @@ import com.kotlinauthdemo.dto.updatepassword.UserPasswordUpdateDto
 import com.kotlinauthdemo.service.UserService
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
+import org.springframework.web.bind.annotation.DeleteMapping
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PatchMapping
 import org.springframework.web.bind.annotation.PathVariable
@@ -58,5 +60,16 @@ class UserController(
         } catch (e: IllegalArgumentException) {
             ResponseEntity.badRequest().body(UpdatePasswordResponseMsg(e.message ?: "Invalid request"))
         }
+    }
+
+    @DeleteMapping("/delete-user")
+    fun deleteUser(@RequestHeader("Authorization") token: String): ResponseEntity<DeleteUserResponseMsg> {
+        return try {
+            userService.deleteUser(token)
+            ResponseEntity.ok(DeleteUserResponseMsg("User deleted successfully"))
+        } catch (e: IllegalArgumentException) {
+            ResponseEntity.badRequest().body(DeleteUserResponseMsg(e.message ?: "Invalid request"))
+        }
+
     }
 }

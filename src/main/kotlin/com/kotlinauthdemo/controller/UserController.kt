@@ -1,5 +1,7 @@
 package com.kotlinauthdemo.controller
 
+import com.kotlinauthdemo.dto.authorization.UserAuthResponseDto
+import com.kotlinauthdemo.dto.authorization.UserLoginDto
 import com.kotlinauthdemo.dto.registration.UserRegistrationDto
 import com.kotlinauthdemo.dto.registration.UserResponseDto
 import com.kotlinauthdemo.service.UserService
@@ -19,5 +21,11 @@ class UserController(
     fun registerUser(@RequestBody registrationDto: UserRegistrationDto): ResponseEntity<UserResponseDto> {
         val response = userService.registerUser(registrationDto)
         return ResponseEntity.status(HttpStatus.CREATED).body(response)
+    }
+
+    @PostMapping("/auth")
+    fun authenticateUser(@RequestBody loginDto: UserLoginDto): ResponseEntity<UserAuthResponseDto> {
+        val response = userService.authenticateUser(loginDto)
+        return ResponseEntity.ok(response)
     }
 }

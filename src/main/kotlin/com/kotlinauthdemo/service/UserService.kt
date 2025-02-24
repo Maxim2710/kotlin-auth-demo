@@ -1,16 +1,20 @@
 package com.kotlinauthdemo.service
 
+import com.kotlinauthdemo.dto.authorization.UserAuthResponseDto
+import com.kotlinauthdemo.dto.authorization.UserLoginDto
 import com.kotlinauthdemo.dto.registration.UserRegistrationDto
 import com.kotlinauthdemo.dto.registration.UserResponseDto
 import com.kotlinauthdemo.model.User
 import com.kotlinauthdemo.repository.UserRepository
+import com.kotlinauthdemo.util.JwtUtils
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Service
 
 @Service
 class UserService(
     private val userRepository: UserRepository,
-    private val passwordEncoder: PasswordEncoder
+    private val passwordEncoder: PasswordEncoder,
+    private val jwtUtils: JwtUtils
 ) {
 
     fun registerUser(registrationDto: UserRegistrationDto): UserResponseDto {
@@ -35,6 +39,24 @@ class UserService(
             id = savedUser.id,
             username = savedUser.username,
             email = savedUser.email
+        )
+    }
+
+    fun authenticateUser(loginDto: UserLoginDto): UserAuthResponseDto {
+        val user = userRepository.findByEmail(loginDto.email)
+            ?: throw IllegalArgumentException("Invalid credentials")
+
+        if (!passwordEncoder.matches(loginDto.password, user.password)) {
+            throw IllegalArgumentException("Invalid credentials")
+        }
+
+        val token = jwtUtils.generateToken(user.email)
+
+        return UserAuthResponseDto(
+            id = user.id,
+            username = user.username,
+            email = user.email,
+            token = token
         )
     }
 }

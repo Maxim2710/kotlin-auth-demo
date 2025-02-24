@@ -8,6 +8,7 @@ import com.kotlinauthdemo.service.UserService
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.GetMapping
+import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
@@ -33,6 +34,12 @@ class UserController(
     @GetMapping("/list-users")
     fun getAllUsers(): ResponseEntity<List<UserResponseDto>> {
         val response = userService.getAllUsers()
+        return ResponseEntity.ok(response)
+    }
+
+    @GetMapping("/{id}")
+    fun getUserById(@PathVariable id: Long): ResponseEntity<UserResponseDto> {
+        val response = userService.getUserById(id)
         return ResponseEntity.ok(response)
     }
 }

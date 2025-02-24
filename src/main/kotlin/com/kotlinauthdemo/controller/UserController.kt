@@ -4,13 +4,17 @@ import com.kotlinauthdemo.dto.authorization.UserAuthResponseDto
 import com.kotlinauthdemo.dto.authorization.UserLoginDto
 import com.kotlinauthdemo.dto.registration.UserRegistrationDto
 import com.kotlinauthdemo.dto.registration.UserResponseDto
+import com.kotlinauthdemo.dto.updatepassword.UpdatePasswordResponseMsg
+import com.kotlinauthdemo.dto.updatepassword.UserPasswordUpdateDto
 import com.kotlinauthdemo.service.UserService
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.GetMapping
+import org.springframework.web.bind.annotation.PatchMapping
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
+import org.springframework.web.bind.annotation.RequestHeader
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 
@@ -41,5 +45,18 @@ class UserController(
     fun getUserById(@PathVariable id: Long): ResponseEntity<UserResponseDto> {
         val response = userService.getUserById(id)
         return ResponseEntity.ok(response)
+    }
+
+    @PatchMapping("/update-password")
+    fun updatePassword(
+        @RequestBody passwordUpdate: UserPasswordUpdateDto,
+        @RequestHeader("Authorization") token: String
+    ): ResponseEntity<UpdatePasswordResponseMsg> {
+        return try {
+            userService.updatePassword(passwordUpdate, token)
+            ResponseEntity.ok(UpdatePasswordResponseMsg("Password updated successfully"))
+        } catch (e: IllegalArgumentException) {
+            ResponseEntity.badRequest().body(UpdatePasswordResponseMsg(e.message ?: "Invalid request"))
+        }
     }
 }

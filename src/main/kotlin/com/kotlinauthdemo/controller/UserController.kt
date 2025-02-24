@@ -7,6 +7,7 @@ import com.kotlinauthdemo.dto.registration.UserResponseDto
 import com.kotlinauthdemo.service.UserService
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
+import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
@@ -26,6 +27,12 @@ class UserController(
     @PostMapping("/auth")
     fun authenticateUser(@RequestBody loginDto: UserLoginDto): ResponseEntity<UserAuthResponseDto> {
         val response = userService.authenticateUser(loginDto)
+        return ResponseEntity.ok(response)
+    }
+
+    @GetMapping("/list-users")
+    fun getAllUsers(): ResponseEntity<List<UserResponseDto>> {
+        val response = userService.getAllUsers()
         return ResponseEntity.ok(response)
     }
 }

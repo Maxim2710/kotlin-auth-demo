@@ -69,4 +69,15 @@ class UserService(
             )
         }
     }
+
+    fun getUserById(id: Long): UserResponseDto {
+        val user = userRepository.findById(id)
+            .orElseThrow { IllegalArgumentException("User not found with id: $id") }
+
+        return UserResponseDto(
+            id = user.id,
+            username = user.username,
+            email = user.email
+        )
+    }
 }

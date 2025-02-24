@@ -59,4 +59,14 @@ class UserService(
             token = token
         )
     }
+
+    fun getAllUsers(): List<UserResponseDto> {
+        return userRepository.findAll().map { user ->
+            UserResponseDto(
+                id = user.id,
+                username = user.username,
+                email = user.email
+            )
+        }
+    }
 }

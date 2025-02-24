@@ -1,7 +1,6 @@
 package com.kotlinauthdemo.model
 
 import jakarta.persistence.*
-import org.apache.logging.log4j.util.StringMap
 
 @Entity
 @Table(name = "users")

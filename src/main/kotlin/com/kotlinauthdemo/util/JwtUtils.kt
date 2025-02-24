@@ -20,9 +20,10 @@ class JwtUtils {
         SignatureAlgorithm.HS256.jcaName
     )
 
-    fun generateToken(email: String): String {
+    fun generateToken(email: String, id: Long): String {
         val claims: MutableMap<String, Any> = HashMap()
         claims["email"] = email
+        claims["id"] = id
 
         return Jwts.builder()
             .setClaims(claims)
@@ -30,12 +31,21 @@ class JwtUtils {
             .compact()
     }
 
-    fun parseJwt(jwt: String): String? {
+    fun extractEmailFromJwt(jwt: String): String? {
         val token = jwt.substringAfter(' ')
         val jws : Jws<Claims> = Jwts.parser()
             .setSigningKey(hmacKey)
             .parseClaimsJws(token)
 
         return jws.body["email"] as? String
+    }
+
+    fun extractUserIdFromJwt(jwt: String): Long? {
+        val token = jwt.substringAfter(' ')
+        val jws: Jws<Claims> = Jwts.parser()
+            .setSigningKey(hmacKey)
+            .parseClaimsJws(token)
+
+        return (jws.body["id"] as? Number)?.toLong()
     }
 }
